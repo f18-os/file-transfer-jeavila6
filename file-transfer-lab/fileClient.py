@@ -61,10 +61,8 @@ for file in os.listdir(files_dir + '/'):
 while True:
     print('Enter filename to upload or \'exit\': ', end='')
     filename = input()
-    # TODO check if file exists
     if filename == 'exit':
         break
-
     if os.path.exists('clientFiles/' + filename):
         file_send(s, filename)
     else:

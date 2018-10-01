@@ -4,7 +4,7 @@ buff = b''
 MAX_SIZE = 100  # max bytes to receive
 
 
-def file_send(sock, filename):
+def file_send(sock, filename):  # return the length of message after sending (length 0 indicates success)
 
     with open('clientFiles/' + filename, 'rb') as br:
         contents = br.read()
@@ -13,10 +13,15 @@ def file_send(sock, filename):
     msg = str(len(filename)).encode() + b':' + filename.encode() + str(len(contents)).encode() + b':' + contents
 
     print(' Sending...', end='')
-    while len(msg):
-        bytes_sent = sock.send(msg)
-        msg = msg[bytes_sent:]
-    print('done',)
+    try:
+        while len(msg):
+            bytes_sent = sock.send(msg[:MAX_SIZE])  # send MAX_SIZE bytes
+            msg = msg[bytes_sent:]
+        print('done')
+        print('len=', len(msg))
+    except BrokenPipeError:
+        print('failed')
+    return len(msg)
 
 
 def file_receive(sock, debug=0):  # returns dictionary with filename and contents received TODO don't use dict
@@ -67,7 +72,7 @@ def file_receive(sock, debug=0):  # returns dictionary with filename and content
                 print('done')
                 return filename_and_contents
 
-        r = sock.recv(MAX_SIZE)  # TODO combine with next line?
+        r = sock.recv(MAX_SIZE)  # receive MAX_SIZE bytes
         buff += r
         if len(r) == 0:
             if len(buff) != 0:
