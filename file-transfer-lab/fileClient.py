@@ -8,7 +8,7 @@ import sys
 import params
 from framedSock import file_send
 
-files_dir = 'clientFiles'  # assuming in same directory
+storage_dir = 'clientFiles/'  # directory used to send/receive files
 
 switches_var_defaults = (
     (('-s', '--server'), 'server', '127.0.0.1:50001'),
@@ -54,16 +54,22 @@ if s is None:
     print('Could not open socket')
     sys.exit(1)
 
-print('Files available for upload:')
-for file in os.listdir(files_dir + '/'):
-    print(f' {file} ({os.path.getsize(files_dir + "/" + file)} bytes)')
+# print files available for sending, assume clientFiles is in same directory
+print('Files available for sending:')
+for file in os.listdir(storage_dir):
+    print(' {} ({} bytes)'.format(file, os.path.getsize(storage_dir + file)))
+print('Sending large files will take a while if you\'re stammering.')
 
 while True:
-    print('Enter filename to upload or \'exit\': ', end='')
+    print('Enter file to send or \'exit\': ', end='')
     filename = input()
     if filename == 'exit':
         break
-    if os.path.exists('clientFiles/' + filename):
-        file_send(s, filename)
+    if os.path.exists(storage_dir + filename):
+        if file_send(s, filename, storage_dir):  # message sent successfully
+            print(' File sent successfully')
+        else:
+            print(' Server closed, exiting')
+            exit()
     else:
         print(' File does not exist')
