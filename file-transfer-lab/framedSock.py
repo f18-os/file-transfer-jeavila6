@@ -18,7 +18,6 @@ def file_send(sock, filename):  # return the length of message after sending (le
             bytes_sent = sock.send(msg[:MAX_SIZE])  # send MAX_SIZE bytes
             msg = msg[bytes_sent:]
         print('done')
-        print('len=', len(msg))
     except BrokenPipeError:
         print('failed')
     return len(msg)
@@ -33,7 +32,7 @@ def file_receive(sock, debug=0):  # returns dictionary with filename and content
     while True:
 
         if state == 'get_filename_len':
-            match = re.match(b'([^:]+):(.*)', buff)  # look for colon
+            match = re.match(b'([^:]+):(.*)', buff, re.DOTALL | re.MULTILINE)  # look for colon
             if match:
                 print(' Downloading...', end='')
                 filename_len, buff = match.groups()
@@ -53,7 +52,7 @@ def file_receive(sock, debug=0):  # returns dictionary with filename and content
                 state = 'get_contents_len'
 
         if state == 'get_contents_len':
-            match = re.match(b'([^:]+):(.*)', buff)  # look for colon
+            match = re.match(b'([^:]+):(.*)', buff, re.DOTALL | re.MULTILINE)  # look for colon
             if match:
                 contents_len, buff = match.groups()
                 try:
