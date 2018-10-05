@@ -54,7 +54,7 @@ if s is None:
     print('Could not open socket')
     sys.exit(1)
 
-# print files available for sending, assume clientFiles is in same directory
+# print files available for sending, assume storage_dir is in same directory
 print('Files available for sending:')
 for file in os.listdir(storage_dir):
     print(' {} ({} bytes)'.format(file, os.path.getsize(storage_dir + file)))

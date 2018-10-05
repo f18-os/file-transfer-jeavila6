@@ -2,11 +2,14 @@
 
 import os
 import socket
+import sys
 
 import params
 from framedSock import file_receive
 
 storage_dir = 'serverFiles/'  # directory used to send/receive files
+if not os.path.exists(storage_dir):
+    os.makedirs(storage_dir)
 
 switches_var_defaults = (
     (('-l', '--listenPort'), 'listenPort', 50001),
@@ -45,7 +48,7 @@ while True:
         data = file_receive(sock)
         if data:
             filename, contents = data
-            if filename and contents:
+            if filename and contents:  # file received successfully
                 if os.path.exists(storage_dir + filename):
                     print(' File already exists:', filename)
                 else:

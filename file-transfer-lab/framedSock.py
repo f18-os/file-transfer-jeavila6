@@ -43,9 +43,9 @@ def file_receive(sock):  # receive file from client, return tuple with filename 
 
         if state == 'get_filename':  # state 1: reading filename
             if len(buff) >= filename_length:
-                filename_got = buff[0:filename_length]
+                filename_encoded = buff[0:filename_length]
                 buff = buff[filename_length:]
-                filename = filename_got.decode()
+                filename = filename_encoded.decode()
                 state = 'get_contents_len'
 
         if state == 'get_contents_len':  # state 2: reading contents length
@@ -68,7 +68,7 @@ def file_receive(sock):  # receive file from client, return tuple with filename 
 
         r = sock.recv(MAX_SIZE)  # receive MAX_SIZE bytes
         buff += r
-        if len(r) == 0:
+        if len(r) == 0:  # nothing to receive
             if len(buff) != 0:
                 print(' Incomplete message')
             return None
